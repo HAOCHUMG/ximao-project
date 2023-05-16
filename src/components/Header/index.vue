@@ -8,7 +8,7 @@
         <li><a herf="#">登陸送活動</a><span>|</span></li>
         <li><a herf="#">小米團購</a><span>|</span></li>
       </ul>
-      <ul class="container-right">
+      <ul v-show="!$store.state.token" class="container-right">
         <li>
           <router-link target="_blank" to="/login">登入</router-link>
           <span>|</span>
@@ -24,17 +24,109 @@
           </div>
         </li>
       </ul>
+      <!-- ============================登入後的ul============================= -->
+      <ul v-show="$store.state.token" class="container-right">
+        <li class="myNotification">
+          <router-link to="" class="myNotification-sec">{{$store.state.token}}</router-link>
+          <div class="email-list">
+            <ul>
+              <li><a class="change-color" href="">個人中心</a></li>
+              <li><a class="change-color" href="">小米帳號</a></li>
+              <li><a class="change-color" href="">我的評價</a></li>
+              <li @click="loginOut"><a class="change-color" href="">退出登入</a></li>
+            </ul>
+          </div>
+        </li>
+        <!-- <span class="li-span">|</span> -->
+
+        <li>
+          <router-link to="">收件匣</router-link>
+          <span>|</span>
+        </li>
+        <li>
+          <router-link to="">我的訂單</router-link>
+          <span>|</span>
+        </li>
+        <li class="cart">
+          <i class="el-icon-shopping-cart-1"></i><a href="#">購物車(0)</a>
+          <div class="cart-list">
+            <i>購物車中還沒有商品,趕緊添加吧</i>
+          </div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name:'Header',
+  name: "Header",
+  data() {
+    return {};
+  },
+  methods:{
+    loginOut(){
+      localStorage.removeItem('token')
+      this.$route.push({name:'/'})
+    }
+  }
 };
 </script>
 
 <style>
+.email-list li {
+  width: 160px;
+  height: 30px;
+  float: left;
+  text-align: left;
+  margin-left: 20px;
+}
+.email-list li:hover > .change-color {
+  color:#ff6700
+}
+
+.email-list li a {
+  color: #424242;
+}
+.container-right .myNotification-sec {
+  margin-left: 20px;
+  color: #b0b0b0;
+  font-size: 12px;
+  font-weight: 400;
+}
+.container-right .myNotification:hover > .myNotification-sec {
+  color: #ff6700;
+}
+.container-right .li-span {
+  margin-left: 10px;
+  color: #424242;
+}
+.container-right .myNotification:hover > .email-list {
+  /* display: block; */
+  height: 130px;
+}
+.myNotification {
+  text-align: center;
+  padding-right: 30px;
+  /* align-content: center;。 */
+}
+.myNotification:hover {
+  background-color: #fff;
+}
+.email-list {
+  /* display: none; */
+  overflow: hidden;
+  transition: height 0.3s;
+  box-shadow: 0 3px 4px rgba(0,0,0,.18);
+  position: absolute;
+  width: 160px;
+  height: 0px;
+  padding: 0px 0px 0px 0px;
+  background-color: #fff;
+  top: 40px;
+  left: 0px;
+  z-index: 9999;
+}
 .topbar {
   width: 100%;
   height: 40px;
@@ -54,14 +146,17 @@ export default {
   cursor: pointer;
 }
 .container-right {
+  position: relative;
   float: right;
 }
+
 .topbar li {
   float: left;
 }
 .topbar a {
   color: #b0b0b0;
 }
+
 .topbar a:hover {
   color: #fff;
 }

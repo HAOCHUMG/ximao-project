@@ -35,7 +35,6 @@ export default {
       this.product = x
     },
     reciveGoods(goods){
-      console.log(goods);
       this.cartGoods = goods
     }
   }

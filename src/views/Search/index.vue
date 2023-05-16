@@ -38,7 +38,7 @@
         <div class="container-flex">
           <div
             class="good-item"
-            v-for="p in product"
+            v-for="p in aaa"
             :key="p.id"
             @click="queryProduct(p.id)"
           >
@@ -66,35 +66,52 @@
 </template>
 
 <script>
+
 export default {
   name: "Search",
   components: {},
   props: ["product"],
   data() {
     return {
+      aaa:JSON.parse(localStorage.getItem('goodss'))
     };
   },
   methods: {
     queryProduct(id) {
-      this.product.forEach((item) => {
+      this.aaa.forEach((item) => {
         if (id == item.id) {
-          item == this.product;
+          item == this.aaa;
           this.$router.push({ name: "product", query: item });
         }
       });
     },
     //模糊查詢
-    queryData() {
-      if (!this.gName) return this.product;
-      let newgoods = [];
-      this.product.forEach((item) => {
-        if (item.pName.indexOf(this.gName) != -1) {
-          newgoods.push(item);
-          console.log(newgoods);
-        }
-      });
-      return newgoods;
-    },
+    // queryData() {
+    //   if (!this.gName) return this.product;
+    //   let newgoods = [];
+      
+    //   this.product.forEach((item) => {
+    //     if (item.pName.indexOf(this.gName) != -1) {
+    //       newgoods.push(item);
+    //       console.log(newgoods);
+    //     }
+    //   });
+    //   localStorage.setItem('goods',JSON.stringify(newgoods))
+    //   return newgoods; 
+      //      if (!this.gName) {
+      //   localStorage.setItem("goods", JSON.stringify(this.product));
+      //   return this.product;
+      // } else {
+      //   let newgoods = [];
+      //   this.product.forEach((item) => {
+      //     if (item.pName.indexOf(this.gName) != -1) {
+      //       newgoods.push(item);
+      //       console.log("newgoodssssss", newgoods);
+      //     }
+      //   });
+      //   return newgoods;
+      // }
+    // },
   },
 };
 </script>

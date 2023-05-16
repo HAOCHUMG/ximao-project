@@ -93,10 +93,13 @@ export default {
   methods: {
     verify() {
       if(this.email == JSON.parse(localStorage.getItem('email'))&&this.pwd == JSON.parse(localStorage.getItem('pwd'))){
-          this.$message('登錄成功')
+          this.openSuccess()
+          const token = Math.random()+Date.now()
+          localStorage.setItem('token',JSON.stringify(token))
+          this.$store.commit('setToken',token)
           this.$router.push('/')
       }else{
-        this.$message('失敗')
+        this.$message.error('登入失敗')
       }
     },
     // 密碼查看
@@ -127,7 +130,12 @@ export default {
         }
       }
     },
-    // 登入驗證
+    openSuccess() {
+        this.$message({
+          message: '登入成功',
+          type: 'success'
+        });
+      },
   },
 };
 </script>

@@ -36,7 +36,7 @@
             </ul>
           </section>
           <section class="section-third">
-            <h3 @click='asdasdas'>數量</h3>
+            <h3>數量</h3>
             <div class="quantity">
               <div>
                 <button @click="countMinus">
@@ -61,7 +61,7 @@
                 ><strong>NT${{ goods.price }}</strong>
               </li>
               <li class="fourth-second">
-                <span>總計:</span><strong>NT${{total}}</strong>
+                <span>總計:</span><strong>NT${{ total }}</strong>
               </li>
             </ul>
           </section>
@@ -76,6 +76,7 @@
 </template>
 
 <script>
+let goodsFirst = [];
 export default {
   name: "Product",
   data() {
@@ -88,9 +89,9 @@ export default {
           price: this.$route.query.price,
           sum: 0,
           imgUrl: this.$route.query.imgUrl,
+          chose: this.$route.query.chose,
         },
       ],
-      // goodsFirst:[]
     };
   },
 
@@ -120,20 +121,17 @@ export default {
         count: this.goods[0].count,
         price: this.$route.query.price,
         imgUrl: this.$route.query.imgUrl,
+        chose: this.$route.query.chose,
       };
       
-      let goodsFirst = []
-
       goodsFirst.push(goodsItem);
+      localStorage.setItem("goods", JSON.stringify(goodsFirst));
 
-      localStorage.setItem('goods',JSON.stringify(goodsFirst));
-      
       this.$router.push({
-        name: "cart",query: {},});
+        name: "cart",
+        query: {},
+      });
     },
-    asdasdas(){
-      
-    }
   },
   computed: {
     total() {

@@ -381,27 +381,47 @@ export default {
     return {
       gName: "",
       product: this.$store.state.product,
+      // product:this.newgoods
     };
   },
   methods: {
     querySearch() {
-      this.$router.push({name:"search"});
+      this.$router.push({ name: "search" });
+      // this.$router.go(0)
       this.recive(this.queryData);
+    },
+    update() {
+      window.location.reload();
     },
   },
   computed: {
     queryData() {
-      if (!this.gName) return this.product;
-      // return this.product.filter(v=>v.name.indexOf(this.gName)!=-1)
-
-      let newgoods = [];
-      this.product.forEach((item) => {
-        if (item.pName.indexOf(this.gName) != -1) {
-          newgoods.push(item);
-          console.log(newgoods);
+      let path = this.$route.path;
+      if (!this.gName) {
+        localStorage.setItem("goodss", JSON.stringify(this.product));
+        if (path !== "/search") {
+          this.$router.replace("search");
+        } else {
+          this.$router.go(0);
         }
-      });
-      return newgoods;
+        return this.product;
+      } else {
+        let newgoods = [];
+        this.product.forEach((item) => {
+          if (item.pName.indexOf(this.gName) != -1) {
+            newgoods.push(item);
+            console.log("newgoodssssss", newgoods);
+
+            localStorage.setItem("goodss", JSON.stringify(newgoods));
+            if (path !== "/search") {
+              this.$router.replace("search");
+            } else {
+              this.$router.go(0);
+            }
+          }
+        });
+        return newgoods;
+      }
     },
   },
 };

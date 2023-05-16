@@ -7,9 +7,25 @@
           <img src="@/assets/images/logo.png" alt="" />
           <h1>我的購物車</h1>
         </div>
-        <ul class="container-right">
+        <ul v-show="!$store.state.token" class="container-right">
           <li><a href="#">註冊</a></li>
           <li><a href="#">立即登錄</a></li>
+        </ul>
+        <!-- 最右側上邊登入 -->
+        <ul v-show="$store.state.token" class="container-right">
+          <li><a href="#">我的訂單</a></li>
+          <li><a href="#">收件匣</a></li>
+          <li id="myorder">
+            <a href="#">{{ $store.state.token }}</a>
+            <div class="myorderlist">
+              <ul>
+                <li><a class="myorderlist-item" href="">我的帳戶</a></li>
+                <li><a class="myorderlist-item" href="">小米帳號</a></li>
+                <li><a class="myorderlist-item" href="">我的評論</a></li>
+                <li><a class="myorderlist-item" href="">退出登錄</a></li>
+              </ul>
+            </div>
+          </li>
         </ul>
       </div>
     </div>
@@ -30,20 +46,53 @@
     <!-- main cart  -->
     <div class="main-cart">
       <!-- cart aside start -->
-      <div class="aside">達到<strong> NT$800 </strong>免運費,特殊商品除外</div>
+      <div v-show="goodsCurrentCount !== 0" class="aside">
+        達到<strong> NT$800 </strong>免運費,特殊商品除外
+      </div>
       <!-- cart aside end -->
       <!-- cart header start -->
-      <div class="cart-header">
-        <div><input type="radio" class="btn" /><label>選擇所有</label></div>
+      <div v-show="goodsCurrentCount !== 0" class="cart-header">
+        <!-- 全選按鈕 -->
+        <div>
+          <input
+            type="checkbox"
+            class="btn"
+            v-model="goodsCurrentCountAll"
+          /><label>選擇所有</label>
+        </div>
+        <!-- :checked='goodsCurrentCountAll' -->
         <div>商品名稱</div>
         <div>單價</div>
         <div>數量</div>
         <div>總計</div>
       </div>
+
+      <!-- 購物車清空時 -->
+      <section v-show="goodsCurrentCount == 0" class="cart-section-empty">
+        <img
+          class="cart-image-empty"
+          src="@/assets/images/cart-empty.svg"
+          alt=""
+        />
+        <p class="cart-title-empty">你的購物車沒有任何商品</p>
+        <button class="cart-button-empty" @click="moveSearch">
+          馬上去購物
+        </button>
+      </section>
       <!-- cart header end -->
       <!-- section-cart start -->
-      <section class="main-section" v-for="goods in goodsCurrent" :key="goods.id">
-        <aside><input type="radio" /></aside>
+      <section
+        class="main-section"
+        v-for="goods in goodsCurrent"
+        :key="goods.id"
+      >
+        <aside>
+          <input
+            type="checkbox"
+            :checked="goods.chose"
+            @change="handleCheck(goods.id)"
+          />
+        </aside>
         <!-- :checked="istrue" -->
         <section class="section-cart">
           <div>
@@ -57,7 +106,9 @@
           </div>
           <div class="plusAndMinus">
             <div>
-              <button @click="countMinus"><i class="el-icon-minus"></i></button>
+              <button @click="countMinus(goods.id)">
+                <i class="el-icon-minus"></i>
+              </button>
 
               <input type="text" v-model="goods.count" @change="changeCount" />
 
@@ -67,7 +118,7 @@
             </div>
           </div>
           <div class="total-price">
-            <strong>NT${{total}}</strong>
+            <strong>NT${{ total(goods.id) }}</strong>
           </div>
           <div class="space"></div>
           <button class="cancel-btn" @click="goodsDelete(goods.id)">
@@ -79,161 +130,40 @@
       <section class="main-suggest">
         <h3 class="suggest-title">為你推薦</h3>
         <ul class="suggest-list">
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
+          <li
+            class="suggest-list-inner"
+            v-for="(sugGoods, index) in suggest"
+            :key="index"
+          >
+            <img :src="sugGoods.imgUrl" alt="" />
+            <h4>{{ sugGoods.suggestName }}</h4>
             <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
-            </div>
-          </li>
-          <li class="suggest-list-inner">
-            <img src="@/assets/images/pms_1659697005.56169523.png" alt="" />
-            <h4>小米電水壺 2</h4>
-            <div>
-              <strong><small>NT$</small>895</strong>
+              <strong><small>NT$</small>{{ sugGoods.suggestPrice }}</strong>
             </div>
           </li>
         </ul>
       </section>
       <!-- suggest end -->
       <!-- cart-total start -->
-      <div class="cart-footer">
+      <div v-show="this.goodsCurrentCount !== 0" class="cart-footer">
         <div class="cart-footer-container">
-          <button class="cart-delete">刪除</button>
+          <button class="cart-delete" @click="clearAll">刪除</button>
           <div class="cart-select">
-            已選擇<strong>{{goodsCurrentCount}}</strong>件共<strong>{{goodsCurrentCount}}</strong>件
+            已選擇<strong>{{ goodsCurrentCountChose }}</strong
+            >件共<strong>{{ goodsCurrentCount }}</strong
+            >件
           </div>
           <div class="cart-space"></div>
-          <div class="cart-total"><strong>總計NT${{total}}</strong></div>
-          <button class="cart-pay">
+          <div class="cart-total">
+            <strong>總計NT${{ totalPrice }}</strong>
+          </div>
+          <button v-show="this.goodsCurrentCountChose!==0" class="cart-pay">
             <span>去結算</span>
-            <span>(0)</span>
+            <span>({{ goodsCurrentCount }})</span>
+          </button>
+          <button v-show="this.goodsCurrentCountChose==0" class="cart-pay-no">
+            <span>去結算</span>
+            <span>({{ goodsCurrentCountChose }})</span>
           </button>
         </div>
       </div>
@@ -248,24 +178,125 @@ export default {
   props: ["cartGoods"],
   data() {
     return {
-      goods:JSON.parse(localStorage.getItem("goods")) || [],
-      // asdad:1111,
-      // price:this.$store.state.price,
-      // istrue:true,
-      // pname:this.$route.query.pname,
-      // price:this.$route.query.price,
-      // imgUrl:this.$route.query.imgUrl,
+      goods: JSON.parse(localStorage.getItem("goods")) || [],
+      suggest: [
+        {
+          imgUrl: require("@/assets/images/pms_1667274029.04651905.png"),
+          suggestName: "Xiaomi 路由器 AX3000 NE",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1664274839.68139820.png"),
+          suggestName: "Xiaomi 手環7 Pro",
+          suggestPrice: "995",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1646293832.42827224.png"),
+          suggestName: "Redmi Note 11 Pro 5G",
+          suggestPrice: "6,999",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1592464563.31172925.png"),
+          suggestName: "小米鬧鐘",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1641461510.1936815.png"),
+          suggestName: "Xiaomi 錶帶",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1669709549.061197.png"),
+          suggestName: "Xiaomi 掃地機器人",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1640775810.png"),
+          suggestName: "Xiaomi 雙頭插槽",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1647600340.7338716.png"),
+          suggestName: "Xiaomi 電風扇多頻版",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1648883321.png"),
+          suggestName: "Xiaomi 錶帶攜帶版",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1655463635.47368688.png"),
+          suggestName: "Xiaomi 充電器",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1678948939.4686686.png"),
+          suggestName: "Xiaomi POCO M5",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1647600303.72028110.png"),
+          suggestName: "Xiaomi 水離子吹風機",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1633751777.51673296.png"),
+          suggestName: "Xiaomi 氣炸悶鍋",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1636613742.66784074.png"),
+          suggestName: "Xiaomi 電子手錶",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1655463635.47368688.png"),
+          suggestName: "Xiaomi 充電線",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1594731494.49966213.png"),
+          suggestName: "小米便攜印表機即貼相紙",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1599205950.png"),
+          suggestName: "Xiaomi 無線開關",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1636538731.png"),
+          suggestName: "Xiaomi 遠端監視器",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1595908715.png"),
+          suggestName: "Xiaomi 充電線",
+          suggestPrice: "1,895",
+        },
+        {
+          imgUrl: require("@/assets/images/pms_1655463635.47368688.png"),
+          suggestName: "Xiaomi 充電線",
+          suggestPrice: "1,895",
+        },
+      ],
     };
   },
   methods: {
     // 商品個數減1
-    countMinus() {
+    countMinus(id) {
+      console.log(id);
       // console.log(this.cartGoods[cartGoods.length].count);
-      if (this.goods[0].count > 1) {
-        this.goods[0].count--;
-      } else {
-        this.goods[0].count == 1;
-      }
+      this.goodsCurrent.forEach((item) => {
+        if (item.id == id) {
+          if (item.count > 1) {
+            item.count--;
+          }
+        } else {
+          item.count == 1;
+        }
+      });
     },
     //手動輸入商品個數
     changeCount(e) {
@@ -279,49 +310,178 @@ export default {
     },
     //刪除單個商品
     goodsDelete(id) {
-      console.log(id);
+     this.goods = this.goods.filter((item) => {
+       return item.id !== id;
+     });
+     localStorage.setItem("goods", JSON.stringify(this.goods));
+    //  window.location.reload()
+    },
+    //勾選部分
+    handleCheck(id) {
       this.goods.forEach((item) => {
-        console.log(item.id);
-        if (id == item.id) {
-          localStorage.removeItem("goods");
-          location.reload()
+        if (item.id == id) {
+          console.log(11111111111);
+          item.chose = !item.chose;
         }
       });
     },
-    //重新刷新頁面
-    // getData() {
-    //   this.goods == JSON.parse(localStorage.getItem("goods")) || [];
-    // },
+    //刪除全部以勾選
+    clearAll() {
+      this.goods = this.goods.filter((item) => {
+        return item.chose == false;
+      });
+    },
+    //移動到search
+    moveSearch() {
+      this.$router.push({ name: "search" });
+    },
   },
   computed: {
-    goodsCurrent(){
-      let goodslist = []
-      this.goods.forEach((item)=>{
-          goodslist.push(item)
-      })
-      return goodslist
+    goodsCurrent() {
+      let goodslist = [];
+      this.goods.forEach((item) => {
+        goodslist.push(item);
+      });
+      return goodslist;
     },
-    total() {
+    // 商品單個總計(金錢)
+    total: function () {
+      return (id) => {
+        let sum = 0;
+        this.goods.forEach((item) => {
+          if (item.id == id) {
+            sum += item.count * item.price;
+          }
+        });
+        return sum;
+      };
+    },
+    // 商品所有金錢總計
+    goodsCurrentCount() {
+      let count = 0;
+      this.goods.forEach((item) => {
+        count += item.count;
+      });
+      return count;
+    },
+    totalPrice() {
       let sum = 0;
-      this.goods.forEach((item)=>{
-        console.log('asdasd.............'+item.price*item.count);
-        sum += item.price*item.count
-      })
-      return sum
+      this.goods.forEach((item) => {
+        if(this.goodsCurrentCountChose == 0){
+          sum = 0
+        }else{
+           sum += item.count * item.price;
+        }
+       
+      });
+      return sum;
     },
-    goodsCurrentCount(){
-        let count = 0
-       this.goods.forEach((item)=>{
-        count += item.count
-      })
-      return count
-    }
-
+    goodsCurrentCountChose() {
+      let i = 0;
+      this.goods.forEach((item) => {
+        if (item.chose == true) {
+          i++;
+        }
+      });
+      return i;
+    },
+    // 全部勾選的方法
+    goodsCurrentCountAll: {
+      get() {
+        return (
+          this.goodsCurrentCount === this.goodsCurrentCountChose &&
+          this.goodsCurrentCount > 0
+        );
+      },
+      set(value) {
+        this.goods.forEach((item) => {
+          item.chose = value;
+        });
+      },
+    },
   },
 };
 </script>
 
 <style scoped>
+/* 購物車為空時 */
+.cart-section-empty {
+  align-items: center;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  text-align: center;
+}
+.cart-image-empty {
+  font-size: 18px;
+  height: 213px;
+  object-fit: contain;
+  overflow: hidden;
+  width: 286px;
+  padding-top: 50px;
+}
+.cart-title-empty {
+  color: #b0b0b0;
+  font-size: 20px;
+  line-height: 24px;
+  margin: 20px 0 0;
+}
+.cart-button-empty {
+  background-color: #ff6700;
+  color: #fff;
+  font-size: 16px;
+  width: 150px;
+  height: 50px;
+  line-height: 20px;
+  margin-top: 26px;
+  padding: 12px 32px;
+  border: 0px;
+  cursor: pointer;
+}
+/* 購物車為空結束 */
+.myorderlist .myorderlist-item {
+  width: 140px;
+  height: 30px;
+  padding: 0px 10px;
+}
+.myorderlist ul li {
+  width: 160px;
+  height: 30px;
+  text-align: left;
+}
+.myorderlist ul li:hover {
+  width: 160px;
+  height: 30px;
+  text-align: left;
+  background-color: rgb(245, 217, 194);
+}
+.container-right #myorder:hover > .myorderlist {
+  height: 120px;
+}
+.myorderlist {
+  position: absolute;
+  top: 40px;
+  right: 130px;
+  width: 160px;
+  height: 0px;
+  margin-top: -12px;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  transition: height 0.3s;
+  overflow: hidden;
+  z-index: 9999;
+}
+#myorder {
+  padding-right: 35px;
+  width: 105px;
+  height: 30px;
+}
+#myorder a {
+  /* margin-top: 2px; */
+  /* padding-right: 35px; */
+  width: 105px;
+  height: 30px;
+}
 .header {
   width: 100%;
   height: 90px;
@@ -329,6 +489,7 @@ export default {
   /* background-color: pink; */
 }
 .container-flex {
+  /* position: relative; */
   width: 1226px;
   height: 59px;
   padding: 15px 0px;
@@ -356,18 +517,24 @@ export default {
     margin-inline-end: 0px; */
 }
 .container ul {
+  padding: 8px 0;
   align-items: center;
+}
+.container-right {
+  top: 15px;
 }
 .container-right li {
   float: right;
   width: 70px;
-  height: 59px;
+  height: 30px;
+  line-height: 4.5;
 }
 .container-right li a {
   display: block;
   align-items: center;
   font-size: 12px;
-  margin-top: 20px;
+  line-height: 2.5;
+
   color: #757575;
 }
 /* <!-- shopping-step start --> */
@@ -379,9 +546,7 @@ export default {
   /* margin: 0px auto; */
   /* background-color: pink; */
 }
-.container {
-  /* padding-left: 20px; */
-}
+
 .shopping-step .container li:nth-child(odd) {
   float: left;
   width: 188.23.px;
@@ -744,6 +909,7 @@ export default {
   border: 0px;
   font-size: 18px;
   color: #ff6700;
+  cursor: pointer;
 }
 .cart-footer-container .cart-select {
   width: 156.078px;
@@ -772,10 +938,25 @@ export default {
   padding: 0 24px;
   margin-left: 10px;
   border: 0px;
+  background-color: #ff6700;
+  cursor: pointer;
+}
+.cart-footer-container .cart-pay-no{
+    width: 202px;
+  height: 68px;
+  padding: 0 24px;
+  margin-left: 10px;
+  border: 0px;
   background-color: #ccc;
   cursor: not-allowed;
 }
 .cart-footer-container .cart-pay span {
+  color: #ffffff;
+  font-size: 22px;
+  z-index: 900;
+  font-weight: bold;
+}
+.cart-footer-container .cart-pay-no span {
   color: #ffffff;
   font-size: 22px;
   z-index: 900;

@@ -30,33 +30,41 @@
           </div>
           <!-- 帳號密碼 -->
           <div class="middlebox">
+
+
             <div class="middlebox-email">
-              <input type="text" v-model="email" required />
+              <input type="text" v-model="email" name="veeEmail" v-validate="{required:true,regex:/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/}" required/>
               <label>郵箱</label>
             </div>
+
+            <span class="checkvaild">{{errors.first('veeEmail')}}</span>
             <div class="middlebox-email">
-              <input  ref="input" type="password" v-model="pwd" required />
+              <input  ref="input" type="password" v-model="pwd" name="veePwd" v-validate="{required:true,regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/}" required />
               <font-awesome-icon v-show="eyeclose" class="eye" @click="eyeoopen" icon="fa-solid fa-eye-slash"/>
               <font-awesome-icon v-show="eyeopen"  class="eye" @click="eyecclose" icon="fa-solid fa-eye" />
               <label>設定密碼</label>
             </div>
+
+            <span class="checkvaild">{{errors.first('veePwd')}}</span>
+
             <div class="middlebox-email">
-              <input ref="input_sec" type="password" v-model="Repwd" required />
+              <input ref="input_sec" type="password" v-model="Repwd" name="veeRepwd" v-validate="{required:true,is:pwd}" required />
               <font-awesome-icon v-show="eyeclose_sec" class="eye" @click="eyeooopen" icon="fa-solid fa-eye-slash"/>
               <font-awesome-icon v-show="eyeopen_sec"  class="eye" @click="eyeccclose" icon="fa-solid fa-eye" />
               <label>再次確認密碼</label>
             </div>
+            <span class="checkvaild">{{errors.first('veeRepwd')}}</span>
+
             
             
             <span class="notice"
               >密碼長度8~16位,數字,字母,字符至少包含兩種</span
             >
             <div class="agree">
-              <input type="checkbox" class="checkbox"/>
-              <label
-                >已閱讀並同意小米帳號<a href="">用戶協議</a> 和
-                <a href="">隱私政策</a></label
-              >
+              <input type="checkbox" class="checkbox" v-model="check" name="veebox" v-validate="{agree:true}"/>
+              <label>已閱讀並同意小米帳號<a href="">用戶協議</a>和<a href="">隱私政策</a></label>
+              <br>
+              <span class="checkvaild">{{errors.first('veebox')}}</span>
             </div>
             <button @click="okRegister">下一步</button>
             <div class="cellphoneresigter">
@@ -110,6 +118,7 @@ export default {
       pwd:this.$store.getters.pwd,
       Repwd:this.$store.getters.Repwd,
       email:this.$store.getters.email,
+      check:false,
       // 眼睛
       eyeclose:true,
       eyeopen:false,
@@ -122,13 +131,21 @@ export default {
   },
   methods:{
     //註冊帳號,並把帳號存在vuex
-    okRegister(){
-      this.$store.commit('setEmail',this.email)
-      this.$store.commit('setPwd',this.pwd)
-      this.$store.commit('setRepwd',this.Repwd)
-      localStorage.setItem('email',JSON.stringify(this.email,))
-      localStorage.setItem('pwd',JSON.stringify(this.pwd,))
-      localStorage.setItem('Repwd',JSON.stringify(this.Repwd,))
+    async okRegister(){
+      const Success =await this.$validator.validateAll()
+      if(Success){
+        this.$store.commit('setEmail',this.email)
+        this.$store.commit('setPwd',this.pwd)
+        this.$store.commit('setRepwd',this.Repwd)
+        localStorage.setItem('email',JSON.stringify(this.email,))
+        localStorage.setItem('pwd',JSON.stringify(this.pwd,))
+        localStorage.setItem('Repwd',JSON.stringify(this.Repwd,))
+        this.$router.push({name: "login",});
+        this.openSuccess()
+      }else{
+        this.open()
+      }
+
     },
     // 眼睛
     eyeoopen(){
@@ -187,11 +204,26 @@ export default {
         }   
       }
     },
+    open() {
+        this.$message.error('註冊失敗');
+      },
+    openSuccess() {
+        this.$message({
+          message: '註冊成功',
+          type: 'success'
+        });
+      },
   },
 };
 </script>
 
 <style scoped>
+.checkvaild{
+  /* float: left; */
+  color: red;
+  font-size: 14px;
+  font-weight: bold;
+}
 .orange{
   border-bottom: 5px solid #ff5c00;
   border-radius: 1%;

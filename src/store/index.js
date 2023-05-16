@@ -7,6 +7,7 @@ const actions = {
     //
 };
 const state = {
+  token:JSON.parse(localStorage.getItem('token')),
   price: 875,
   email:'',
   pwd:'',
@@ -18,6 +19,8 @@ const state = {
       price: "875",
       imgUrl: require("@/assets/images/pms_1659697005.56169523.png"),
       imgUrlSec: require("@/assets/images/pms_1659697005.56169523.png"),
+      chose:true
+
     },
     {
       id: "002",
@@ -25,6 +28,7 @@ const state = {
       price: "695",
       imgUrl: require("@/assets/images/pms_1656658475.90537032.png"),
       imgUrlSec: require("@/assets/images/pms_1656658475.90537032.png"),
+      chose:true
     },
     {
       id: "003",
@@ -32,6 +36,7 @@ const state = {
       price: "14995",
       imgUrl: require("@/assets/images/pms_1630296437.53798138.png"),
       imgUrlSec: require("@/assets/images/pms_1630296437.53798138.png"),
+      chose:true
     },
     {
       id: "004",
@@ -39,6 +44,7 @@ const state = {
       price: "1195",
       imgUrl: require(`@/assets/images/pms_1656064170.12135221.jpg`),
       imgUrlSec: require("@/assets/images/pms_1656064170.12135221.jpg"),
+      chose:true
     },
     {
       id: "005",
@@ -46,6 +52,7 @@ const state = {
       price: "495",
       imgUrl: require("@/assets/images/pms_1627893234.12551662.png"),
       imgUrlSec: require("@/assets/images/pms_1627893234.12551662.png"),
+      chose:true
     },
     {
       id: "006",
@@ -53,6 +60,7 @@ const state = {
       price: "1095",
       imgUrl: require("@/assets/images/pms_1633675764.75855247.png"),
       imgUrlSec: require("@/assets/images/pms_1633675764.75855247.png"),
+      chose:true
     },
     {
       id: "007",
@@ -60,6 +68,7 @@ const state = {
       price: "1995",
       imgUrl: require("@/assets/images/pms_1633751777.51673296.png"),
       imgUrlSec: require("@/assets/images/pms_1633751777.51673296.png"),
+      chose:true
     },
     {
       id: "008",
@@ -67,6 +76,7 @@ const state = {
       price: "245",
       imgUrl: require("@/assets/images/pms_1630294515.7418119.png"),
       imgUrlSec: require("@/assets/images/pms_1630294515.7418119.png"),
+      chose:true
     },
     {
       id: "009",
@@ -74,6 +84,7 @@ const state = {
       price: "4595",
       imgUrl: require("@/assets/images/pms_1621479160.6511830.png"),
       imgUrlSec: require("@/assets/images/pms_1621479160.6511830.png"),
+      chose:true
     },
     {
       id: "010",
@@ -81,16 +92,21 @@ const state = {
       price: "16999",
       imgUrl: require("@/assets/images/pms_1613445002.13879491.png"),
       imgUrlSec: require("@/assets/images/pms_1613445002.13879491.png"),
+      chose:true
     },
   ],
 };
 const getters = {
     email:(state) => state.email,
     pwd:(state) =>state.pwd,
-    repwd:(state) =>state.repwd
+    repwd:(state) =>state.repwd,
+    token:(state) =>state.token
 }
 
 const mutations = {
+    setToken(state,newToken){
+        state.token = newToken
+    },
     setEmail(state,newEmail){
         state.email = newEmail
     },
